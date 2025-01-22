@@ -1,12 +1,21 @@
-var body = $response.body;
-var obj = JSON.parse(body);
+var body = $response['body'];
+var response = JSON.parse(body);
 
-obj.subscriptionEndDate = "2029-05-01T10:10:53.929Z",
-obj.subscriptionStartDate = "2022-05-01T10:10:53.929Z",
-obj.plan = "premium",
-obj.is_premium = "true"
-obj.subscription_status = "active",
-obj.hasPremium = true,
+response = {
+    "status": "success",
+    "message": "Premium features have been unlocked.",
+    "premium": {
+        "is_premium": true,
+        "expiration_date": "2099-12-31T23:59:59Z",
+        "features": [
+            "no_ads",
+            "priority_support",
+            "unlimited_access",
+            "premium_content"
+        ]
+    }
+};
 
-body = JSON.stringify(obj);
-$done({body}); 
+body = JSON.stringify(response);
+
+$done({ body: body });
