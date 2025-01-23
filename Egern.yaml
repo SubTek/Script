@@ -3,6 +3,7 @@ mitm:
   ca_p12: egern.p12
   ca_passphrase: egern
   hostnames:
+  - premium*.truecaller.com
   - premium-api.myfitnesspal.com
   - api.deepfaker.app
   - ch.sleepcycle.com
@@ -185,5 +186,11 @@ scriptings:
     name: DeepFaker
     match: ^https?:\/\/api\.deepfaker\.app\/api\/v1\/account\/update-profile
     script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/DeepFaker.js
+    body_required: true
+    update_interval: 5
+- http_response:
+    name: TrueCaller
+    match: ^https://premium-(.+)\.truecaller\.com/v\d/(subscriptions|products\/apple)?
+    script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Truecaller.js
     body_required: true
     update_interval: 5
