@@ -6,6 +6,8 @@ mitm:
   - premium*.truecaller.com
   - game.codycross-game.com
   - api.facer.io
+  - createpdf.acrobat.com
+  - lcs-mobile-cops.adobe.io
   - iosgods.com
   - premium-api.myfitnesspal.com
   - api.deepfaker.app
@@ -219,5 +221,17 @@ scriptings:
     name: iOsGods2
     match: ^https:\/\/iosgods\.com\/api\/core\/me$
     script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/iosgodsprem.js
+    body_required: true
+    update_interval: 5
+- http_response:
+    name: Adobe
+    match: ^https:\/\/lcs-mobile-cops\.adobe\.io\/mobile_profile\/nul\/v2$
+    script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Adobe.js
+    body_required: true
+    update_interval: 5
+- http_response:
+    name: iOsGods2
+    match: ^https:\/\/createpdf\.acrobat\.com\/createpdf\/api\/users\/me\/subscriptions$
+    script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/AdobeScanPdf.js
     body_required: true
     update_interval: 5
