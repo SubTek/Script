@@ -4,6 +4,8 @@ mitm:
   ca_passphrase: egern
   hostnames:
   - premium*.truecaller.com
+  - *.intsig.net
+  - *.camscanner.com
   - app-subscription-proxy.accuweather.com
   - game.codycross-game.com
   - api.facer.io
@@ -240,5 +242,11 @@ scriptings:
     name: AccuWeather
     match: ^https:\/\/app-subscription-proxy\.accuweather\.com\/subscriptions\/v1\/apple\/validate$
     script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Accuweather.js
+    body_required: true
+    update_interval: 5
+- http_response:
+    name: CamScanner
+    match: ^https:\/\/.*\.(intsig\.net|camscanner\.com)
+    script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/CamScanner.js
     body_required: true
     update_interval: 5
