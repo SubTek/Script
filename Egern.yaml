@@ -4,6 +4,7 @@ mitm:
   ca_passphrase: egern
   hostnames:
   - premium*.truecaller.com
+  - app-subscription-proxy.accuweather.com
   - game.codycross-game.com
   - api.facer.io
   - createpdf.acrobat.com
@@ -233,5 +234,11 @@ scriptings:
     name: iOsGods2
     match: ^https:\/\/createpdf\.acrobat\.com\/createpdf\/api\/users\/me\/subscriptions$
     script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/AdobeScanPdf.js
+    body_required: true
+    update_interval: 5
+- http_response:
+    name: AccuWeather
+    match: ^https:\/\/app-subscription-proxy\.accuweather\.com\/subscriptions\/v1\/apple\/validate$
+    script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Accuweather.js
     body_required: true
     update_interval: 5
