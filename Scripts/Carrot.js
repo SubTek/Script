@@ -5,7 +5,7 @@ obj = {
     "result": {
       "serverDate": {
         "__type": "Date",
-        "iso": "2024-03-08T08:16:11.477Z"
+        "iso": "2025-01-24T08:16:11.477Z"
       },
       "subscriptions": [
         {
@@ -31,8 +31,8 @@ obj = {
           "status": 0,
           "service": "apple",
           "environment": "Production",
-          "createdAt": "2024-02-23T07:48:07.554Z",
-          "updatedAt": "2024-03-08T07:24:51.399Z",
+          "createdAt": "2025-01-23T07:48:07.554Z",
+          "updatedAt": "2025-01-24T07:24:51.399Z",
           "deviceId": [
             "WfjT0vx1hx",
             "pPsiN1AKdt"
@@ -40,7 +40,7 @@ obj = {
           "lastNotification": "DID_CHANGE_RENEWAL_STATUS",
           "lastNotificationDate": {
             "__type": "Date",
-            "iso": "2024-02-24T11:47:39.182Z"
+            "iso": "2025-01-24T11:47:39.182Z"
           },
           "objectId": "m5JpZFig4u",
           "__type": "Object",
