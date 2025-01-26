@@ -20,7 +20,7 @@ mitm:
   - api.imem.apple.app
   - api.getmimo.com
   - firstclass.tripsy.app
-  - isi.csan.goodnotes
+  - isi.csan.goodnotes.com
   - api.revenuecat.com
   - api.rc-backup.com
   - buy.itunes.apple.com
@@ -41,7 +41,7 @@ mitm:
   - subscriptions.songshift.com
   - api.adblockpro.app
   - mobile-api.adguard.org
-
+  
 header_rewrites:
 - delete:
     match: ^https?:\/\/(api\.(revenuecat|rc-backup)|isi\.csan\.goodnotes)\.com\/.+\/(receipts$|subscribers\/?(.*?)*$|offers$)
@@ -51,8 +51,7 @@ header_rewrites:
     match: ^https?:\/\/(api\.(revenuecat|rc-backup)|isi\.csan\.goodnotes)\.com\/.+\/(receipts$|subscribers\/?(.*?)*$|offers$)
     name: x-revenuecat-etag
     type: request
-
-
+    
 scriptings:
 - http_response:
     name: RC-GN
