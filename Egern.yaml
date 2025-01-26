@@ -4,6 +4,9 @@ mitm:
   ca_passphrase: egern
   hostnames:
   - premium*.truecaller.com
+  - game.codycross-game.com
+  - api.facer.io
+  - iosgods.com
   - premium-api.myfitnesspal.com
   - api.deepfaker.app
   - ch.sleepcycle.com
@@ -192,5 +195,29 @@ scriptings:
     name: TrueCaller
     match: ^https://premium-(.+)\.truecaller\.com/v\d/(subscriptions|products\/apple)?
     script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Truecaller.js
+    body_required: true
+    update_interval: 5
+- http_response:
+    name: CodyCross
+    match: ^https:\/\/game\.codycross.*\/(Reward\/Claim\/.*|reward\/claim\/you_won|Powerup\/Consume|Player\/AppAberto|streak\/puzzlecomplete|subscription\/get|shorttrackevent\/playereventprogress|shorttrackevent\/.*progresso|shorttrackevent\/collectchest|shorttrackevent\/buyenergy)$
+    script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Codycross.js
+    body_required: true
+    update_interval: 5
+- http_response:
+    name: Facer
+    match: ^https:\/\/.*facer\.io\/parse\/(functions\/(getWatchface|getSubscriptionStatus|isAdmin)|users\/me|functions\/fetchUser)$
+    script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Facer.js
+    body_required: true
+    update_interval: 5
+- http_response:
+    name: iOsGods1
+    match: ^https:\/\/iosgods\.com\/menu\/igauthads\.json$
+    script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/iosgodsgrps.js
+    body_required: true
+    update_interval: 5
+- http_response:
+    name: iOsGods2
+    match: ^https:\/\/iosgods\.com\/api\/core\/me$
+    script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/iosgodsprem.js
     body_required: true
     update_interval: 5
