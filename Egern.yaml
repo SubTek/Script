@@ -7,6 +7,7 @@ mitm:
   - *.intsig.net
   - *.camscanner.com
   - app-subscription-proxy.accuweather.com
+  - mb3admin.com
   - api-production.endel.io
   - game.codycross-game.com
   - api.facer.io
@@ -255,5 +256,11 @@ scriptings:
     name: CamScanner
     match: ^https?:\/\/api-production\.endel\.io\/v\d\/call
     script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Endel.js
+    body_required: true
+    update_interval: 5
+- http_response:
+    name: Emby
+    match: ^https:\/\/mb3admin\.com\/admin\/service(\/registration\/validateDevice|\/appstore\/register|\/registration\/validate|\/registration\/getStatus|\/supporter\/retrievekey)
+    script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Emby.js
     body_required: true
     update_interval: 5
