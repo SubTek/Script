@@ -7,6 +7,7 @@ mitm:
   - *.intsig.net
   - *.camscanner.com
   - app-subscription-proxy.accuweather.com
+  - api-production.endel.io
   - game.codycross-game.com
   - api.facer.io
   - createpdf.acrobat.com
@@ -248,5 +249,11 @@ scriptings:
     name: CamScanner
     match: ^https:\/\/.*\.(intsig\.net|camscanner\.com)
     script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/CamScanner.js
+    body_required: true
+    update_interval: 5
+- http_response:
+    name: CamScanner
+    match: ^https?:\/\/api-production\.endel\.io\/v\d\/call
+    script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Endel.js
     body_required: true
     update_interval: 5
