@@ -244,12 +244,6 @@ scriptings:
       body_required: true
       update_interval: 5
   - http_response:
-      name: CamScanner1
-      match: ^https:\/\/.*\.(intsig\.net|camscanner\.com)
-      script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/CamScanner.js
-      body_required: true
-      update_interval: 5
-  - http_response:
       name: Endel
       match: ^https?:\/\/api-production\.endel\.io\/v\d\/call
       script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Endel.js
