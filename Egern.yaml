@@ -4,8 +4,6 @@ mitm:
   ca_passphrase: egern
   hostnames:
     - premium*.truecaller.com
-    - *.intsig.net
-    - *.camscanner.com
     - app-subscription-proxy.accuweather.com
     - mb3admin.com
     - api-production.endel.io
