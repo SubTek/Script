@@ -1,0 +1,22 @@
+name: Spotify
+description: Spotify Mods 1. Remove advertisements; 2. Display singer/album list normally; 3. Remove random playback 4. Increase audio quality
+author: app2smile
+
+scriptings:
+  - http_request:
+      name: Spotify
+      match: ^https:\/\/spclient\.wg\.spotify\.com\/(artistview\/v1\/artist|album-entity-view\/v2\/album)\/
+      script_url: https://raw.githubusercontent.com/app2smile/rules/master/js/spotify-json.js
+      timeout: 30
+
+  - http_response:
+      name: Spotify
+      match: ^https:\/\/spclient\.wg\.spotify\.com\/(bootstrap\/v1\/bootstrap|user-customization-service\/v1\/customize)$
+      script_url: https://raw.githubusercontent.com/app2smile/rules/master/js/spotify-proto.js
+      timeout: 30
+      body_required: true
+      binary_body: true
+
+mitm:
+  hostnames:
+    - spclient.wg.spotify.com
