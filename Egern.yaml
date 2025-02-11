@@ -17,11 +17,13 @@ mitm:
     - premium-api.myfitnesspal.com
     - api.deepfaker.app
     - ch.sleepcycle.com
+    - api.flexibits.com
     - api.imem.apple.app
     - api.getmimo.com
     - firstclass.tripsy.app
     - isi.csan.goodnotes.com
     - api.revenuecat.com
+    - lapi.photomath.net
     - api.rc-backup.com
     - buy.itunes.apple.com
     - api.picsart.com
@@ -29,6 +31,7 @@ mitm:
     - us-central1-alight-creative.cloudfunctions.net
     - api.adapty.io
     - carrotweather.herokuapp.com
+    - api-weather.andy.works
     - order.creativeappnow.com
     - api.mwm-users.com
     - us-central1-muslim-pro-app.cloudfunctions.net
@@ -114,6 +117,12 @@ scriptings:
       body_required: true
       update_interval: 5
   - http_response:
+      name: Fantastical
+      match: ^https:\/\/api\.flexibits\.com\/(v1\/auth\/device|v1\/account\/details)
+      script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/fantastical.js
+      body_required: true
+      update_interval: 5
+  - http_response:
       name: VivaCut
       match: https://api-fra.vivacut.com/api/rest/commerce/integrate/vip/perform
       script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/VivaCut.js
@@ -168,6 +177,12 @@ scriptings:
       body_required: true
       update_interval: 5
   - http_response:
+      name: NotBoring
+      match: https://api-weather.andy.works/v1/checkSubscriptions
+      script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/notboring.js
+      body_required: true
+      update_interval: 5
+  - http_response:
       name: Mimo
       match: https://api.getmimo.com/v1/subscriptions
       script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Mimo.js
@@ -201,6 +216,18 @@ scriptings:
       name: TrueCaller
       match: ^https://premium-(.+)\.truecaller\.com/v\d/(subscriptions|products\/apple)?
       script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Truecaller.js
+      body_required: true
+      update_interval: 5
+  - http_response:
+      name: Photomath
+      match: https://lapi.photomath.net/v4/me
+      script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/photomath.js
+      body_required: true
+      update_interval: 5
+  - http_response:
+      name: Pillow
+      match: https:\/\/api\.revenuecat\.com\/v1\/(subscribers|receipts)
+      script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/pillow.js
       body_required: true
       update_interval: 5
   - http_response:
