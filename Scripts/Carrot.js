@@ -1,28 +1,34 @@
+// More creative way up updating the date by LMK
+
 var body = $response.body;
 var obj = JSON.parse(body);
+
+const date = new Date();
+const timestamp = date.getTime();
+const exp = timestamp + (365 * 24 * 60 * 60 * 1000);
 
 obj = {
     "result": {
       "serverDate": {
         "__type": "Date",
-        "iso": "2025-01-24T08:16:11.477Z"
+        "iso": date.toISOString(),
       },
       "subscriptions": [
         {
           "userId": "6FFEA015-FEDE-440A-B669-0D45AFCF9478",
           "orderId": "30001933369528",
           "packageName": "com.grailr.CARROTweather",
-          "appPurchaseTime": "1733137075000",  // Adjusted
+          "appPurchaseTime": "1701601075000",
           "appStartingVersion": "5.12.9.0",
           "receipt": "MIT",
           "productId": "com.grailr.carrotWeather.premiumFamily1year",
-          "purchaseTime": 1738014480000,  // Adjusted
-          "originalPurchaseTime": 1738014481000,  // Adjusted
-          "expirationTime": "1779544680000",  // Adjusted
+          "purchaseTime": timestamp,
+          "originalPurchaseTime": timestamp,
+          "expirationTime": `${exp}`,
           "in_app_ownership_type": "PURCHASED",
           "expirationReason": null,
           "isInBillingRetryPeriod": null,
-          "autoRenewStatus": 1,
+          "autoRenewStatus": 0,
           "cancellationDate": null,
           "cancellationReason": null,
           "priceConsentStatus": null,
@@ -31,8 +37,8 @@ obj = {
           "status": 0,
           "service": "apple",
           "environment": "Production",
-          "createdAt": "2025-01-23T07:48:07.554Z",
-          "updatedAt": "2025-01-24T07:24:51.399Z",
+          "createdAt": date.toISOString(),
+          "updatedAt": date.toISOString(),
           "deviceId": [
             "WfjT0vx1hx",
             "pPsiN1AKdt"
@@ -40,7 +46,7 @@ obj = {
           "lastNotification": "DID_CHANGE_RENEWAL_STATUS",
           "lastNotificationDate": {
             "__type": "Date",
-            "iso": "2026-01-24T11:47:39.182Z"
+            "iso": date.toISOString(),
           },
           "objectId": "m5JpZFig4u",
           "__type": "Object",
