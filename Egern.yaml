@@ -3,6 +3,8 @@ mitm:
   ca_p12: egern.p12
   ca_passphrase: egern
   hostnames:
+    - '*.intsig.net'
+    - '*.camscanner.com'
     - premium*.truecaller.com
     - app-subscription-proxy.accuweather.com
     - mb3admin.com
@@ -255,4 +257,9 @@ scriptings:
       script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Emby.js
       body_required: true
       update_interval: 5
-      
+  - http_response:
+      name: CamScanner
+      match: ^https:\/\/.*\.(intsig\.net|camscanner\.com)
+      script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/CamScanner.js
+      body_required: true
+      update_interval: 5      
