@@ -24,11 +24,10 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Generate Surge Module if Upstream Changed
+      - name: Generate Surge Module
         run: |
           python - <<'EOF'
           import os
-          import hashlib
           import requests
           import datetime
 
@@ -38,24 +37,6 @@ jobs:
           if response.status_code != 200:
               raise Exception(f"Failed to fetch file from {url}: {response.status_code}")
           data = response.text
-          
-          # Calculate the SHA-256 hash of the file content
-          hash_current = hashlib.sha256(data.encode('utf-8')).hexdigest()
-
-          # File to store the last known hash
-          hash_file = "current_hash.txt"
-          previous_hash = None
-          if os.path.exists(hash_file):
-              with open(hash_file, "r") as f:
-                  previous_hash = f.read().strip()
-
-          if previous_hash == hash_current:
-              print("No changes detected in the upstream file. Exiting.")
-              exit(0)
-          else:
-              print("Changes detected. Updating module...")
-              with open(hash_file, "w") as f:
-                  f.write(hash_current)
 
           # Ensure the output directory exists
           output_dir = "Surge/Modules"
@@ -94,12 +75,14 @@ jobs:
           # Configure Git with the GitHub Actions bot identity.
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Force Git to use the PAT for all GitHub URLs.
+          git config --global url."https://x-access-token:${ADBLOCK}@github.com/".insteadOf "https://github.com/"
 
-          # Stage the updated files.
-          git add Surge/Modules/Ad-Telemetry-Block.surge current_hash.txt
+          # Stage the generated module file.
+          git add Surge/Modules/Ad-Telemetry-Block.surge
 
-          # Commit changes only if there are changes.
+          # Commit only if there are changes.
           git diff --cached --quiet || git commit -m "Updated Surge module based on upstream changes [skip ci]"
 
-          # Push changes using your PAT.
-          git push "https://x-access-token:${ADBLOCK}@github.com/SubTek/Script.git" HEAD:${GITHUB_REF#refs/heads/}
+          # Push changes.
+          git push origin HEAD:${GITHUB_REF#refs/heads/}
