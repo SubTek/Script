@@ -90,6 +90,6 @@ jobs:
       - name: Commit Changes if Any
         uses: EndBug/add-and-commit@v9
         with:
-          token: ${{ secrets.ADBLOCK }}
+          github_token: ${{ secrets.ADBLOCK }}
           message: "Updated Surge module based on upstream changes [skip ci]"
           add: "Surge/Modules/Ad-Telemetry-Block.surge current_hash.txt"
