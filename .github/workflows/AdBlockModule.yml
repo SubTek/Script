@@ -1,0 +1,57 @@
+name: Update Surge Module
+
+on:
+  schedule:
+    # 1 PM Eastern Time: Eastern Standard Time is UTC-5 so 1PM ET is 18:00 UTC.
+    # (Note: During Daylight Saving Time ET is UTC-4; adjust if needed.)
+    - cron: '0 18 * * *'
+
+jobs:
+  update-module:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Download Domain List
+        run: |
+          curl -L -o pro.txt https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/pro.txt
+
+      - name: Convert to Surge Module
+        run: |
+          # Create folder if it doesn't exist
+          mkdir -p Surge/Modules
+          output_file="Surge/Modules/Ad-Telemetry-Blocking.conf"
+          
+          # Write header with date
+          echo "# Surge Ad and Telemetry Blocking Module" > "$output_file"
+          echo "# Updated on $(date)" >> "$output_file"
+          echo "" >> "$output_file"
+          echo "[Rule]" >> "$output_file"
+          
+          # Process each domain (skip comments and blank lines) and write in Surge format
+          grep -v '^#' pro.txt | grep -v '^\s*$' | while IFS= read -r domain; do
+            domain=$(echo "$domain" | xargs)
+            if [ -n "$domain" ]; then
+              echo "DOMAIN-SUFFIX,$domain,REJECT" >> "$output_file"
+            fi
+          done
+
+      - name: Commit and Push changes
+        env:
+          # Use the PAT stored in the ADBLOCK secret
+          ADBLOCK: ${{ secrets.ADBLOCK }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Update the remote URL to use the PAT for pushing commits
+          git remote set-url origin https://$ADBLOCK@github.com/SubTek/Script.git
+          
+          git add Surge/Modules/Ad-Telemetry-Blocking.conf
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "Update Surge Ad and Telemetry Blocking Module"
+            git push origin HEAD
+          else
+            echo "No changes detected."
+          fi
