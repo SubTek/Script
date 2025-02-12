@@ -1,91 +1,74 @@
-name: Update Surge Ad Block Module From HaGeZi Pro
+- name: Generate Surge Module
+  run: |
+    python - <<'EOF'
+    import os
+    import hashlib
+    import requests
+    import datetime
+    import time
 
-on:
-  # Runs daily at 1:00 PM Eastern Time (17:00 UTC for Eastern Daylight Time)
-  schedule:
-    - cron: '0 17 * * *'
-  workflow_dispatch:
+    # URL of the raw upstream file
+    url = "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/pro.txt"
+    
+    def fetch_file(url, retries=3):
+        for attempt in range(retries):
+            response = requests.get(url)
+            if response.status_code == 200:
+                return response.text
+            else:
+                if attempt < retries - 1:
+                    time.sleep(5)  # wait before retrying
+                else:
+                    raise Exception(f"Failed to fetch file from {url}: {response.status_code}")
 
-jobs:
-  update:
-    runs-on: ubuntu-latest
+    data = fetch_file(url)
+    
+    # Calculate the SHA-256 hash of the file content
+    hash_current = hashlib.sha256(data.encode('utf-8')).hexdigest()
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+    # File to store the last known hash
+    hash_file = "current_hash.txt"
+    previous_hash = None
+    if os.path.exists(hash_file):
+        with open(hash_file, "r") as f:
+            previous_hash = f.read().strip()
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.x"
+    if previous_hash == hash_current:
+        print("No changes detected in the upstream file. Exiting.")
+        exit(0)
+    else:
+        print("Changes detected. Updating module...")
+        with open(hash_file, "w") as f:
+            f.write(hash_current)
 
-      - name: Generate Surge Module
-        run: |
-          python - <<'EOF'
-          import os
-          import hashlib
-          import requests
-          import datetime
+    # Ensure the output directory exists
+    output_dir = "Surge/Modules"
+    os.makedirs(output_dir, exist_ok=True)
 
-          # URL of the raw upstream file
-          url = "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/pro.txt"
-          response = requests.get(url)
-          if response.status_code != 200:
-              raise Exception(f"Failed to fetch file from {url}: {response.status_code}")
-          data = response.text
-          
-          # Calculate the SHA-256 hash of the file content
-          hash_current = hashlib.sha256(data.encode('utf-8')).hexdigest()
+    # Process the downloaded file to generate the Surge module content
+    lines = data.splitlines()
+    module_lines = [
+        "# Surge Ad & Telemetry Blocking Module",
+        "# Converted from: " + url,
+        "# Last updated: " + datetime.datetime.utcnow().strftime("%Y-%m-%d"),
+        "#",
+        "# To use, import this module into your Surge configuration.",
+        "",
+        "[Rule]",
+        "# --- Begin blocking rules ---"
+    ]
 
-          # File to store the last known hash
-          hash_file = "current_hash.txt"
-          previous_hash = None
-          if os.path.exists(hash_file):
-              with open(hash_file, "r") as f:
-                  previous_hash = f.read().strip()
+    for line in lines:
+        line = line.strip()
+        # Skip empty lines and comments
+        if not line or line.startswith("#"):
+            continue
+        module_lines.append(f"DOMAIN-SUFFIX,{line},REJECT")
 
-          if previous_hash == hash_current:
-              print("No changes detected in the upstream file. Exiting.")
-              exit(0)
-          else:
-              print("Changes detected. Updating module...")
-              with open(hash_file, "w") as f:
-                  f.write(hash_current)
-
-          # Ensure the output directory exists
-          output_dir = "Surge/Modules"
-          os.makedirs(output_dir, exist_ok=True)
-
-          # Process the downloaded file to generate the Surge module content
-          lines = data.splitlines()
-          module_lines = [
-              "# Surge Ad & Telemetry Blocking Module",
-              "# Converted from: " + url,
-              "# Last updated: " + datetime.datetime.utcnow().strftime("%Y-%m-%d"),
-              "#",
-              "# To use, import this module into your Surge configuration.",
-              "",
-              "[Rule]",
-              "# --- Begin blocking rules ---"
-          ]
-
-          for line in lines:
-              line = line.strip()
-              # Skip empty lines and comments
-              if not line or line.startswith("#"):
-                  continue
-              module_lines.append(f"DOMAIN-SUFFIX,{line},REJECT")
-
-          module_content = "\n".join(module_lines)
-          # Write the module file to the desired directory
-          module_file_path = os.path.join(output_dir, "Ad-Telemetry-Block.surge")
-          with open(module_file_path, "w") as f:
-              f.write(module_content)
-          print("Surge module updated successfully at", module_file_path)
-          EOF
-
-      - name: Commit Changes if Any
-        uses: EndBug/add-and-commit@v9
-        with:
-          message: "Updated Surge module based on upstream changes [skip ci]"
-          add: "Surge/Modules/Ad-Telemetry-Block.surge current_hash.txt"
+    module_content = "\n".join(module_lines)
+    # Write the module file to the desired directory
+    module_file_path = os.path.join(output_dir, "Ad-Telemetry-Block.surge")
+    with open(module_file_path, "w") as f:
+        f.write(module_content)
+    print("Surge module updated successfully at", module_file_path)
+    EOF
