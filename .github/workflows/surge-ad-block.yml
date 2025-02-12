@@ -1,89 +1,57 @@
-name: Update Surge Module on Upstream Change
+name: Update Surge Module
 
 on:
-  # Runs daily at 1:00 PM Eastern Time (17:00 UTC for Eastern Daylight Time)
   schedule:
-    - cron: '0 17 * * *'
-  workflow_dispatch:
+    # 1 PM Eastern Time: Eastern Standard Time is UTC-5 so 1PM ET is 18:00 UTC.
+    # (Note: During Daylight Saving Time ET is UTC-4; adjust if needed.)
+    - cron: '0 18 * * *'
 
 jobs:
-  update:
+  update-module:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.x"
-
-      - name: Install dependencies
-        run: pip install requests
-
-      - name: Generate Surge Module
+      - name: Download Domain List
         run: |
-          python - <<'EOF'
-          import os
-          import requests
-          import datetime
+          curl -L -o pro.txt https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/pro.txt
 
-          # URL of the raw upstream file
-          url = "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/pro.txt"
-          response = requests.get(url)
-          if response.status_code != 200:
-              raise Exception(f"Failed to fetch file from {url}: {response.status_code}")
-          data = response.text
+      - name: Convert to Surge Module
+        run: |
+          # Create folder if it doesn't exist
+          mkdir -p Surge/Modules
+          output_file="Surge/Modules/Ad-Telemetry-Blocking.conf"
+          
+          # Write header with date
+          echo "# Surge Ad and Telemetry Blocking Module" > "$output_file"
+          echo "# Updated on $(date)" >> "$output_file"
+          echo "" >> "$output_file"
+          echo "[Rule]" >> "$output_file"
+          
+          # Process each domain (skip comments and blank lines) and write in Surge format
+          grep -v '^#' pro.txt | grep -v '^\s*$' | while IFS= read -r domain; do
+            domain=$(echo "$domain" | xargs)
+            if [ -n "$domain" ]; then
+              echo "DOMAIN-SUFFIX,$domain,REJECT" >> "$output_file"
+            fi
+          done
 
-          # Ensure the output directory exists
-          output_dir = "Surge/Modules"
-          os.makedirs(output_dir, exist_ok=True)
-
-          # Process the downloaded file to generate the Surge module content
-          lines = data.splitlines()
-          module_lines = [
-              "# Surge Ad & Telemetry Blocking Module",
-              "# Converted from: " + url,
-              "# Last updated: " + datetime.datetime.utcnow().strftime("%Y-%m-%d"),
-              "#",
-              "# To use, import this module into your Surge configuration.",
-              "",
-              "[Rule]",
-              "# --- Begin blocking rules ---"
-          ]
-
-          for line in lines:
-              line = line.strip()
-              if not line or line.startswith("#"):
-                  continue
-              module_lines.append(f"DOMAIN-SUFFIX,{line},REJECT")
-
-          module_content = "\n".join(module_lines)
-          module_file_path = os.path.join(output_dir, "Ad-Telemetry-Block.surge")
-          with open(module_file_path, "w") as f:
-              f.write(module_content)
-          print("Surge module updated successfully at", module_file_path)
-          EOF
-
-      - name: Commit and Push Changes if Any
+      - name: Commit and Push changes
         env:
+          # Use the PAT stored in the ADBLOCK secret
           ADBLOCK: ${{ secrets.ADBLOCK }}
         run: |
-          # Configure Git with the GitHub Actions bot identity.
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Update the remote URL to use the PAT for pushing commits
+          git remote set-url origin https://$ADBLOCK@github.com/SubTek/Script.git
           
-          # Update the remote URL to use your PAT.
-          git remote set-url origin "https://x-access-token:${ADBLOCK}@github.com/SubTek/Script.git"
-          
-          # Stage the generated module file.
-          git add Surge/Modules/Ad-Telemetry-Block.surge
-
-          # Commit changes only if there are changes.
-          git diff --cached --quiet || git commit -m "Updated Surge module based on upstream changes [skip ci]"
-
-          # Push changes.
-          git push origin HEAD:${GITHUB_REF#refs/heads/}
+          git add Surge/Modules/Ad-Telemetry-Blocking.conf
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "Update Surge Ad and Telemetry Blocking Module"
+            git push origin HEAD
+          else
+            echo "No changes detected."
+          fi
