@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -74,22 +76,30 @@ jobs:
 
           for line in lines:
               line = line.strip()
-              # Skip empty lines and comments
               if not line or line.startswith("#"):
                   continue
               module_lines.append(f"DOMAIN-SUFFIX,{line},REJECT")
 
           module_content = "\n".join(module_lines)
-          # Write the module file to the desired directory
           module_file_path = os.path.join(output_dir, "Ad-Telemetry-Block.surge")
           with open(module_file_path, "w") as f:
               f.write(module_content)
           print("Surge module updated successfully at", module_file_path)
           EOF
 
-      - name: Commit Changes if Any
-        uses: EndBug/add-and-commit@v9
-        with:
-          github_token: ${{ secrets.ADBLOCK }}
-          message: "Updated Surge module based on upstream changes [skip ci]"
-          add: "Surge/Modules/Ad-Telemetry-Block.surge current_hash.txt"
+      - name: Commit and Push Changes if Any
+        env:
+          ADBLOCK: ${{ secrets.ADBLOCK }}
+        run: |
+          # Configure Git with the GitHub Actions bot identity.
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Stage the updated files.
+          git add Surge/Modules/Ad-Telemetry-Block.surge current_hash.txt
+
+          # Commit changes only if there are changes.
+          git diff --cached --quiet || git commit -m "Updated Surge module based on upstream changes [skip ci]"
+
+          # Push changes using your PAT.
+          git push "https://x-access-token:${ADBLOCK}@github.com/SubTek/Script.git" HEAD:${GITHUB_REF#refs/heads/}
