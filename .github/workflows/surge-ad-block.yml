@@ -75,13 +75,14 @@ jobs:
           # Configure Git with the GitHub Actions bot identity.
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          # Force Git to use the PAT for all GitHub URLs.
-          git config --global url."https://x-access-token:${ADBLOCK}@github.com/".insteadOf "https://github.com/"
-
+          
+          # Update the remote URL to use your PAT.
+          git remote set-url origin "https://x-access-token:${ADBLOCK}@github.com/SubTek/Script.git"
+          
           # Stage the generated module file.
           git add Surge/Modules/Ad-Telemetry-Block.surge
 
-          # Commit only if there are changes.
+          # Commit changes only if there are changes.
           git diff --cached --quiet || git commit -m "Updated Surge module based on upstream changes [skip ci]"
 
           # Push changes.
