@@ -2,9 +2,9 @@ name: Update Surge Module
 
 on:
   schedule:
-    # 1 PM Eastern Time: Eastern Standard Time is UTC-5 so 1PM ET is 18:00 UTC.
-    # (Note: During Daylight Saving Time ET is UTC-4; adjust if needed.)
+    # Runs daily at 1 PM Eastern Time (18:00 UTC)
     - cron: '0 18 * * *'
+  workflow_dispatch:
 
 jobs:
   update-module:
@@ -20,17 +20,19 @@ jobs:
 
       - name: Convert to Surge Module
         run: |
-          # Create folder if it doesn't exist
+          # Ensure the Surge/Modules folder exists
           mkdir -p Surge/Modules
           output_file="Surge/Modules/Ad-Telemetry-Blocking.conf"
           
-          # Write header with date
-          echo "# Surge Ad and Telemetry Blocking Module" > "$output_file"
-          echo "# Updated on $(date)" >> "$output_file"
-          echo "" >> "$output_file"
-          echo "[Rule]" >> "$output_file"
+          # Create a header with the update timestamp
+          {
+            echo "# Surge Ad and Telemetry Blocking Module"
+            echo "# Updated on $(date)"
+            echo ""
+            echo "[Rule]"
+          } > "$output_file"
           
-          # Process each domain (skip comments and blank lines) and write in Surge format
+          # Convert each valid domain line into a Surge rule
           grep -v '^#' pro.txt | grep -v '^\s*$' | while IFS= read -r domain; do
             domain=$(echo "$domain" | xargs)
             if [ -n "$domain" ]; then
@@ -45,7 +47,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          # Update the remote URL to use the PAT for pushing commits
+          # Update the remote URL with the PAT for authentication
           git remote set-url origin https://$ADBLOCK@github.com/SubTek/Script.git
           
           git add Surge/Modules/Ad-Telemetry-Blocking.conf
