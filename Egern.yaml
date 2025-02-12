@@ -22,6 +22,8 @@ mitm:
     - api.getmimo.com
     - firstclass.tripsy.app
     - isi.csan.goodnotes.com
+    - api.footpathapp.com
+    - purchase-verifier.cdwapi.com          
     - api.revenuecat.com
     - lapi.photomath.net
     - api.rc-backup.com
@@ -44,6 +46,7 @@ mitm:
     - subscriptions.songshift.com
     - api.adblockpro.app
     - mobile-api.adguard.org
+    - api.letterboxd.com    
 
 header_rewrites:
   - delete:
@@ -83,7 +86,7 @@ scriptings:
   - http_response:
       name: iTunes
       match: ^https?:\/\/buy\.itunes\.apple\.com\/verifyReceipt$
-      script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/iTunes.js
+      script_url: https://raw.githubusercontent.com/chxm1023/Rewrite/refs/heads/main/iTunes.js
       body_required: true
       update_interval: 5
   - http_response:
@@ -290,3 +293,21 @@ scriptings:
       script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/CamScanner.js
       body_required: true
       update_interval: 5      
+  - http_response:
+      name: Retake
+      match: ^https:\/\/purchase-verifier\.cdwapi\.com\/ios$
+      script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/retake.js
+      body_required: true
+      update_interval: 5   
+  - http_response:
+      name: Footpath
+      match: ^https:\/\/api\.footpathapp\.com\/v2\/(store\/verify|me)$
+      script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/footpath.js
+      body_required: true
+      update_interval: 5
+  - http_response:
+      name: Letterboxd
+      match: ^https:\/\/api\.letterboxd\.com\/api\/v0\/me$
+      script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Letterboxd.js
+      body_required: true
+      update_interval: 5                  
