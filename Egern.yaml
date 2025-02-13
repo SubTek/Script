@@ -46,8 +46,10 @@ mitm:
     - subscriptions.songshift.com
     - api.adblockpro.app
     - mobile-api.adguard.org
-    - api.letterboxd.com    
-
+    - api-sub.meitu.com
+    - mobile.flightradar24.com
+    - api.letterboxd.com
+    
 header_rewrites:
   - delete:
       match: ^https?:\/\/(api\.(revenuecat|rc-backup)|isi\.csan\.goodnotes)\.com\/.+\/(receipts$|subscribers\/?(.*?)*$|offers$)
@@ -310,4 +312,22 @@ scriptings:
       match: ^https:\/\/api\.letterboxd\.com\/api\/v0\/me$
       script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Letterboxd.js
       body_required: true
-      update_interval: 5                  
+      update_interval: 5
+  - http_response:
+      name: GentlerStreak
+      match: ^https?:\/\/(api\.(revenuecat|rc-backup)|isi\.csan\.goodnotes)\.com\/.+\/(receipts$|subscribers\/?(.*?)*$|offers$)
+      script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/GentlerStreak.js
+      body_required: true
+      update_interval: 5  
+  - http_response:
+      name: Wink
+      match: ^https?:\/\/api-sub\.meitu\.com\/v2\/user\/vip_info_by_group\.json
+      script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Wink.js
+      body_required: true
+      update_interval: 5  
+  - http_response:
+      name: FlightRadar24
+      match: ^https?:\/\/mobile\.flightradar24\.com\/mobile\/(user-session|subscribe)
+      script_url: https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/FlightRadar24.js
+      body_required: true
+      update_interval: 5  
