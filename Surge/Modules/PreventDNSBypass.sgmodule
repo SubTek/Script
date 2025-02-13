@@ -1,0 +1,5 @@
+#!name=Prevent DNS Bypass
+#!desc=Some apps like Netflix will bypass Surge's DNS settings and use their own DNS this should prevent that
+
+[Rule]
+AND,((PROTOCOL,UDP), (DEST-PORT,53)),REJECT-NO-DROP

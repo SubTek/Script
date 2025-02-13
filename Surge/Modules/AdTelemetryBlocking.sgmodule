@@ -1,0 +1,5 @@
+#!name=HaGeZi Pro Blocklist
+#!desc="Blocks Ads, Affiliate, Tracking, Metrics, Telemetry, Phishing, Malware, Scam, Fake, Coins and other "Crap"." - Hagezi@Github
+
+[Rule]
+DOMAIN-SET,https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/pro.txt,REJECT

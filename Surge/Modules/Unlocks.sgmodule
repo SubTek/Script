@@ -1,0 +1,133 @@
+#!name=App Unlocks
+#!desc=App Subscription Unlocks
+
+[Script]
+# RC-GN
+http-response ^https?:\/\/(api\.(revenuecat|rc-backup)|isi\.csan\.goodnotes)\.com\/.+\/(receipts$|subscribers\/?(.*?)*$|offers$) script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/AutoRC.js
+
+# Adapty
+http-response ^https?:\/\/api\.adapty\.io\/api\/v\d\/sdk\/(analytics\/profiles|in-apps\/(apple\/receipt\/validate|purchase-containers)|purchase\/app-store) script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Adapty.js
+
+# Facemoji
+http-response ^https?:\/\/order\.creativeappnow\.com\/iap\/receipt script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Facemoji.js
+
+# Readdle
+http-response ^https:\/\/license\.pdfexpert\.com\/api\/2\.0\/(calendarslite|pdfexpert6|documents)\/subscription\/(refresh|check) script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/readdle.js
+
+# iTunes
+http-response ^https?:\/\/buy\.itunes\.apple\.com\/verifyReceipt$ script-path=https://raw.githubusercontent.com/chxm1023/Rewrite/refs/heads/main/iTunes.js
+
+# Grammarly
+http-response ^https?:\/\/subscription\.grammarly\.com\/api\/v1\/subscription$ script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Grammarly.js
+
+# eSound
+http-response ^https?:\/\/api\.esound\.app\/account script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/eSound.js
+
+# Purchasely
+http-response ^https?:\/\/api\.purchasely\.io\/paab\/user_purchases script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/purchasely.js
+
+# Vaia (StudySmarter)
+http-response ^https?:\/\/prod\.studysmarter\.de\/payments\/info script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Vaia.js
+
+# Qonversion
+http-response ^https?:\/\/api\.qonversion\.io\/v1\/user\/init script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/qonversion.js
+
+# Fantastical
+http-response ^https:\/\/api\.flexibits\.com\/(v1\/auth\/device|v1\/account\/details) script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/fantastical.js
+
+# VivaCut
+http-response ^https?:\/\/api-fra\.vivacut\.com\/api\/rest\/commerce\/integrate\/vip\/perform script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/VivaCut.js
+
+# CarrotWeather
+http-response ^https?:\/\/carrotweather\.herokuapp\.com\/parse\/functions\/findSubscriptionsForUserId script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Carrot.js
+
+# KineMaster
+http-response ^https?:\/\/api-account\.kinemasters\.com\/v2\/user\/subscribe script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/KineMaster.js
+
+# PicsArt (http-request)
+http-request ^https?:\/\/api\.picsart\.com\/gw-v2\/shop\/subscription\/apple\/purchases script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/PicsArt.js
+
+# AlightMotion
+http-response ^https?:\/\/us-central1-alight-creative\.cloudfunctions\.net\/getAccountStatusAndLicenses script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/AlightMotion.js
+
+# SongShift
+http-response ^https?:\/\/subscriptions\.songshift\.com\/validate script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/SongShift.js
+
+# AdblockPro
+http-response ^https?:\/\/api\.adblockpro\.app\/verify script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/AdblockPro.js
+
+# AdGuard
+http-response ^https:\/\/mobile-api\.adguard\.org\/api\/.+\/ios_validate_receipt\/(.*?) script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/AdGuardPro.js
+
+# Tripsy
+http-response ^https?:\/\/firstclass\.tripsy\.app\/api\/v1\/(receipt\/update|me)\??.* script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Tripsy.js
+
+# NotBoring
+http-response ^https?:\/\/api-weather\.andy\.works\/v1\/checkSubscriptions script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/notboring.js
+
+# Mimo
+http-response ^https?:\/\/api\.getmimo\.com\/v1\/subscriptions script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Mimo.js
+
+# iMe
+http-response ^https?:\/\/api\.imem\.apple\.app\/api\/premium\/getOwnStatus script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/iMe.js
+
+# MyFitnessPal
+http-response ^https?:\/\/premium-api\.myfitnesspal\.com\/v\d\/subscriptions\/MFP\/.* script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/MFP.js
+
+# SleepCycle
+http-response ^https?:\/\/ch\.sleepcycle\.com\/api\/v\d\/subscription\/get? script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/SleepCycle.js
+
+# DeepFaker
+http-response ^https?:\/\/api\.deepfaker\.app\/api\/v1\/account\/update-profile script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/DeepFaker.js
+
+# TrueCaller
+http-response ^https?:\/\/premium-(.+)\.truecaller\.com\/v\d\/(subscriptions|products\/apple)? script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Truecaller.js
+
+# Photomath
+http-response ^https?:\/\/lapi\.photomath\.net\/v4\/me script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/photomath.js
+
+# Pillow
+http-response ^https:\/\/api\.revenuecat\.com\/v1\/(subscribers|receipts) script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/pillow.js
+
+# CodyCross
+http-response ^https:\/\/game\.codycross.*\/(Reward\/Claim\/.*|reward\/claim\/you_won|Powerup\/Consume|Player\/AppAberto|streak\/puzzlecomplete|subscription\/get|shorttrackevent\/playereventprogress|shorttrackevent\/.*progresso|shorttrackevent\/collectchest|shorttrackevent\/buyenergy)$ script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Codycross.js
+
+# Facer
+http-response ^https:\/\/.*facer\.io\/parse\/(functions\/(getWatchface|getSubscriptionStatus|isAdmin)|users\/me|functions\/fetchUser)$ script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Facer.js
+
+# iOSGods
+http-response ^https:\/\/iosgods\.com\/menu\/igauthads\.json$ script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/iosgodsgrps.js
+http-response ^https:\/\/iosgods\.com\/api\/core\/me$ script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/iosgodsprem.js
+
+# Adobe
+http-response ^https:\/\/lcs-mobile-cops\.adobe\.io\/mobile_profile\/nul\/v2$ script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Adobe.js
+http-response ^https:\/\/createpdf\.acrobat\.com\/createpdf\/api\/users\/me\/subscriptions$ script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/AdobeScanPdf.js
+
+# AccuWeather
+http-response ^https:\/\/app-subscription-proxy\.accuweather\.com\/subscriptions\/v1\/apple\/validate$ script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Accuweather.js
+
+# Endel
+http-response ^https?:\/\/api-production\.endel\.io\/v\d\/call script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Endel.js
+
+# Emby
+http-response ^https:\/\/mb3admin\.com\/admin\/service(\/registration\/validateDevice|\/appstore\/register|\/registration\/validate|\/registration\/getStatus|\/supporter\/retrievekey) script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Emby.js
+
+# CamScanner
+http-response ^https:\/\/.*\.(intsig\.net|camscanner\.com) script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/CamScanner.js
+
+# Retake
+http-response ^https:\/\/purchase-verifier\.cdwapi\.com\/ios$ script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/retake.js
+
+# Footpath
+http-response ^https:\/\/api\.footpathapp\.com\/v2\/(store\/verify|me)$ script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/footpath.js
+
+# Letterboxd
+http-response ^https:\/\/api\.letterboxd\.com\/api\/v0\/me$ script-path=https://raw.githubusercontent.com/SubTek/Egern/refs/heads/main/Scripts/Letterboxd.js
+
+[Header Rewrite]
+^https?:\/\/(api\.(revenuecat|rc-backup)|isi\.csan\.goodnotes)\.com\/.+\/(receipts$|subscribers\/?(.*?)*$|offers$) request-header X-RevenueCat-ETag (.+) ->
+^https?:\/\/(api\.(revenuecat|rc-backup)|isi\.csan\.goodnotes)\.com\/.+\/(receipts$|subscribers\/?(.*?)*$|offers$) request-header x-revenuecat-etag (.+) ->
+
+[MITM]
+# Enable HTTPS Decryption & append hostnames
+hostname = %APPEND% hostname = *.intsig.net, *.camscanner.com, premium*.truecaller.com, app-subscription-proxy.accuweather.com, mb3admin.com, api-production.endel.io, game.codycross-game.com, api.facer.io, createpdf.acrobat.com, lcs-mobile-cops.adobe.io, iosgods.com, premium-api.myfitnesspal.com, api.deepfaker.app, ch.sleepcycle.com, api.flexibits.com, api.imem.apple.app, api.getmimo.com, firstclass.tripsy.app, isi.csan.goodnotes.com, api.footpathapp.com, purchase-verifier.cdwapi.com, api.revenuecat.com, lapi.photomath.net, api.rc-backup.com, buy.itunes.apple.com, api.picsart.com, api-account.kinemasters.com, us-central1-alight-creative.cloudfunctions.net, api.adapty.io, carrotweather.herokuapp.com, api-weather.andy.works, order.creativeappnow.com, api.mwm-users.com, us-central1-muslim-pro-app.cloudfunctions.net, prod.studysmarter.de, api.qonversion.io, subscription.grammarly.com, api.esound.app, api.purchasely.io, api.sandbox.love, subscriptions.songshift.com, api.adblockpro.app, mobile-api.adguard.org, api.letterboxd.com
