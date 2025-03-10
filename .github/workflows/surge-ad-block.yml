@@ -1,57 +1,49 @@
-name: Update Surge Module
+name: Update QuanX Domain Rules
 
 on:
+  push:
+    branches: [ main ]
   schedule:
-    # 1 PM Eastern Time: Eastern Standard Time is UTC-5 so 1PM ET is 18:00 UTC.
-    # (Note: During Daylight Saving Time ET is UTC-4; adjust if needed.)
-    - cron: '0 18 * * *'
+    - cron: "0 0 * * *"  # Runs daily at midnight UTC
 
 jobs:
-  update-module:
+  convert:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Download Domain List
-        run: |
-          curl -L -o pro.txt https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/pro.txt
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
 
-      - name: Convert to Surge Module
+      - name: Fetch and convert domain list
         run: |
-          # Create folder if it doesn't exist
-          mkdir -p Surge/Modules
-          output_file="Surge/Modules/Ad-Telemetry-Blocking.conf"
+          # Create Lists directory if it doesn't exist
+          mkdir -p Lists
           
-          # Write header with date
-          echo "# Surge Ad and Telemetry Blocking Module" > "$output_file"
-          echo "# Updated on $(date)" >> "$output_file"
-          echo "" >> "$output_file"
-          echo "[Rule]" >> "$output_file"
+          # Download the domain list
+          curl -s https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/pro.txt -o pro.txt
           
-          # Process each domain (skip comments and blank lines) and write in Surge format
-          grep -v '^#' pro.txt | grep -v '^\s*$' | while IFS= read -r domain; do
-            domain=$(echo "$domain" | xargs)
-            if [ -n "$domain" ]; then
-              echo "DOMAIN-SUFFIX,$domain,REJECT" >> "$output_file"
-            fi
-          done
+          # Convert the domain list to QuanX rules and output to Lists/Ad-Telemetry-Blocking.list
+          python - << 'EOF'
+          with open("pro.txt", "r") as f:
+              domains = f.read().splitlines()
+          with open("Lists/Ad-Telemetry-Blocking.list", "w") as out:
+              for domain in domains:
+                  domain = domain.strip()
+                  if domain and not domain.startswith("#"):
+                      out.write(f"DOMAIN-SUFFIX,{domain},REJECT\n")
+          EOF
 
-      - name: Commit and Push changes
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add Lists/Ad-Telemetry-Blocking.list
+          # Only commit if there are changes
+          git diff --cached --quiet || git commit -m "Update QuanX domain rules"
+          git push
         env:
-          # Use the PAT stored in the ADBLOCK secret
-          ADBLOCK: ${{ secrets.ADBLOCK }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          # Update the remote URL to use the PAT for pushing commits
-          git remote set-url origin https://$ADBLOCK@github.com/SubTek/Script.git
-          
-          git add Surge/Modules/Ad-Telemetry-Blocking.conf
-          if ! git diff-index --quiet HEAD; then
-            git commit -m "Update Surge Ad and Telemetry Blocking Module"
-            git push origin HEAD
-          else
-            echo "No changes detected."
-          fi
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
