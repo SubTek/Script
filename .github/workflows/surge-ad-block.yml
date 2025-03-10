@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -47,4 +49,4 @@ jobs:
           git diff --cached --quiet || git commit -m "Update QuanX domain rules"
           git push
         env:
-          ADBLOCK: ${{ secrets.ADBLOCK }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
