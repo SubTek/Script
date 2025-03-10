@@ -47,4 +47,4 @@ jobs:
           git diff --cached --quiet || git commit -m "Update QuanX domain rules"
           git push
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ADBLOCK: ${{ secrets.ADBLOCK }}
