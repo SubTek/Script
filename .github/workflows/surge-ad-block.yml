@@ -1,52 +1,31 @@
-name: Hegzi QuanX Domain Rules
+name: Update ADBlock.list
 
 on:
-  workflow_dispatch:
-  push:
-    branches: [ main ]
+  # Run daily at midnight UTC; you can adjust the cron schedule as needed.
   schedule:
-    - cron: "0 0 * * *"  # Runs daily at midnight UTC
+    - cron: '0 0 * * *'
+  # Also allow manual triggering of the workflow.
+  workflow_dispatch:
 
 jobs:
-  convert:
+  update-list:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.x"
-
-      - name: Fetch and convert domain list
+      - name: Download raw list from upstream
         run: |
-          # Create Lists directory if it doesn't exist
+          curl -sSL https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/pro.txt -o pro.txt
+
+      - name: Convert to QuanX format and save to Lists/ADBlock.list
+        run: |
           mkdir -p Lists
-          
-          # Download the domain list
-          curl -s https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/pro.txt -o pro.txt
-          
-          # Convert the domain list to QuanX rules and output to Lists/Ad-Telemetry-Blocking.list
-          python - << 'EOF'
-          with open("pro.txt", "r") as f:
-              domains = f.read().splitlines()
-          with open("Lists/Ad-Telemetry-Blocking.list", "w") as out:
-              for domain in domains:
-                  domain = domain.strip()
-                  if domain and not domain.startswith("#"):
-                      out.write(f"DOMAIN-SUFFIX,{domain},REJECT\n")
-          EOF
+          # Remove blank lines and comments, then add the QuanX rule format.
+          grep -vE '^(#|\s*$)' pro.txt | sed 's/^/DOMAIN-SUFFIX,/' | sed 's/$/,REJECT/' > Lists/ADBlock.list
 
       - name: Commit and push changes
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git add Lists/Ad-Telemetry-Blocking.list
-          # Only commit if there are changes
-          git diff --cached --quiet || git commit -m "Update QuanX domain rules"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: "Update ADBlock.list"
+          add: 'Lists/ADBlock.list'
