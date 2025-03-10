@@ -1,10 +1,8 @@
 name: Update ADBlock.list
 
 on:
-  # Run daily at midnight UTC; you can adjust the cron schedule as needed.
   schedule:
     - cron: '0 0 * * *'
-  # Also allow manual triggering of the workflow.
   workflow_dispatch:
 
 jobs:
@@ -21,7 +19,6 @@ jobs:
       - name: Convert to QuanX format and save to Lists/ADBlock.list
         run: |
           mkdir -p Lists
-          # Remove blank lines and comments, then add the QuanX rule format.
           grep -vE '^(#|\s*$)' pro.txt | sed 's/^/DOMAIN-SUFFIX,/' | sed 's/$/,REJECT/' > Lists/ADBlock.list
 
       - name: Commit and push changes
@@ -29,3 +26,4 @@ jobs:
         with:
           message: "Update ADBlock.list"
           add: 'Lists/ADBlock.list'
+          token: ${{ secrets.GITHUB_TOKEN }}
