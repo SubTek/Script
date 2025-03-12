@@ -1,30 +1,19 @@
-function deleteHeader(headers, key) {
-    const lowerKey = key.toLowerCase();
-    for (const header in headers) {
-        if (header.toLowerCase() === lowerKey) {
-            delete headers[header];
-            break;
-        }
-    }
-}
+var request = $request;
 
-var modifiedHeaders = $request.headers;
-deleteHeader(modifiedHeaders, "X-RevenueCat-ETag");
+// Delete specified headers
+delete request.headers["x-revenuecat-etag"];
+delete request.headers["X-RevenueCat-ETag"];
 
 const options = {
     url: "https://api.revenuecat.com/v1/product_entitlement_mapping",
     headers: {
-        'Authorization': modifiedHeaders["authorization"],
-        'X-Platform': 'iOS',
-        'User-Agent': modifiedHeaders["user-agent"]
+        'Authorization' : request.headers["authorization"],
+        'X-Platform' : 'iOS',
+        'User-Agent' : request.headers["user-agent"]
     }
-};
+}
 
-$httpClient.get(options, function (error, newResponse, data) {
-    if (error) {
-        $done({ error });
-        return;
-    }
+$httpClient.get(options, function(error, newResponse, data){
 
     const ent = JSON.parse(data);
 
@@ -34,7 +23,7 @@ $httpClient.get(options, function (error, newResponse, data) {
         "subscriber": {
             "entitlement": {},
             "first_seen": "2024-01-01T01:01:01Z",
-            "original_application_version": "9692",
+            "original_application_version": "9999",
             "last_seen": "2024-01-01T01:01:01Z",
             "other_purchases": {},
             "management_url": null,
@@ -56,8 +45,8 @@ $httpClient.get(options, function (error, newResponse, data) {
             jsonToUpdate.subscriber.entitlements[entitlement] = {
                 "purchase_date": "2024-01-01T01:01:01Z",
                 "original_purchase_date": "2024-01-01T01:01:01Z",
-                "expires_date": "9692-01-01T01:01:01Z",
-                "is_sandbox": false,
+                "expires_date": "9999-01-01T01:01:01Z",
+                "is_sandbox" : false,
                 "ownership_type": "PURCHASED",
                 "store": "app_store",
                 "product_identifier": productIdentifier
@@ -65,10 +54,10 @@ $httpClient.get(options, function (error, newResponse, data) {
 
             // Add product identifier to subscriptions
             jsonToUpdate.subscriber.subscriptions[productIdentifier] = {
-                "expires_date": "9692-01-01T01:01:01Z",
+                "expires_date": "9999-01-01T01:01:01Z",
                 "original_purchase_date": "2024-01-01T01:01:01Z",
                 "purchase_date": "2024-01-01T01:01:01Z",
-                "is_sandbox": false,
+                "is_sandbox" : false,
                 "ownership_type": "PURCHASED",
                 "store": "app_store"
             };
@@ -76,5 +65,5 @@ $httpClient.get(options, function (error, newResponse, data) {
     }
 
     body = JSON.stringify(jsonToUpdate);
-    $done({ body, headers: modifiedHeaders });
+    $done({ body });
 });
