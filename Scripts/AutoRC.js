@@ -1,19 +1,34 @@
-var request = $request;
+function deleteHeader(headers, key) {
+    const lowerKey = key.toLowerCase();
+    for (const header in headers) {
+        if (header.toLowerCase() === lowerKey) {
+            delete headers[header];
+            break;
+        }
+    }
+}
+
+var modifiedHeaders = $request.headers;
+deleteHeader(modifiedHeaders, "X-RevenueCat-ETag");
 
 const options = {
     url: "https://api.revenuecat.com/v1/product_entitlement_mapping",
     headers: {
-     'Authorization' : request.headers["authorization"],
-     'X-Platform' : 'iOS' ,
-     'User-Agent' : request.headers["user-agent"]
+        'Authorization': modifiedHeaders["authorization"],
+        'X-Platform': 'iOS',
+        'User-Agent': modifiedHeaders["user-agent"]
     }
-}
+};
 
-$httpClient.get(options, function(error, newResponse, data){
-  
-const ent = JSON.parse(data);
+$httpClient.get(options, function (error, newResponse, data) {
+    if (error) {
+        $done({ error });
+        return;
+    }
 
-let jsonToUpdate = {
+    const ent = JSON.parse(data);
+
+    let jsonToUpdate = {
         "request_date_ms": 1704070861000,
         "request_date": "2024-01-01T01:01:01Z",
         "subscriber": {
@@ -31,37 +46,35 @@ let jsonToUpdate = {
         }
     };
 
-const productEntitlementMapping = ent.product_entitlement_mapping
+    const productEntitlementMapping = ent.product_entitlement_mapping;
 
-for (const [entitlementId, productInfo] of Object.entries(productEntitlementMapping)) {
-  const productIdentifier = productInfo.product_identifier;
-  const entitlements = productInfo.entitlements;
+    for (const [entitlementId, productInfo] of Object.entries(productEntitlementMapping)) {
+        const productIdentifier = productInfo.product_identifier;
+        const entitlements = productInfo.entitlements;
 
+        for (const entitlement of entitlements) {
+            jsonToUpdate.subscriber.entitlements[entitlement] = {
+                "purchase_date": "2024-01-01T01:01:01Z",
+                "original_purchase_date": "2024-01-01T01:01:01Z",
+                "expires_date": "9692-01-01T01:01:01Z",
+                "is_sandbox": false,
+                "ownership_type": "PURCHASED",
+                "store": "app_store",
+                "product_identifier": productIdentifier
+            };
 
-  for (const entitlement of entitlements) {
-    jsonToUpdate.subscriber.entitlements[entitlement] = {
-      "purchase_date": "2024-01-01T01:01:01Z",
-      "original_purchase_date": "2024-01-01T01:01:01Z",
-      "expires_date": "9692-01-01T01:01:01Z",
-      "is_sandbox" : false,
-      "ownership_type": "PURCHASED",
-      "store": "app_store",
-      "product_identifier": productIdentifier
-    };
+            // Add product identifier to subscriptions
+            jsonToUpdate.subscriber.subscriptions[productIdentifier] = {
+                "expires_date": "9692-01-01T01:01:01Z",
+                "original_purchase_date": "2024-01-01T01:01:01Z",
+                "purchase_date": "2024-01-01T01:01:01Z",
+                "is_sandbox": false,
+                "ownership_type": "PURCHASED",
+                "store": "app_store"
+            };
+        }
+    }
 
-    // Add product identifier to subscriptions
-    jsonToUpdate.subscriber.subscriptions[productIdentifier] = {
-      "expires_date": "9692-01-01T01:01:01Z",
-      "original_purchase_date": "2024-01-01T01:01:01Z",
-      "purchase_date": "2024-01-01T01:01:01Z",
-      "is_sandbox" : false,
-      "ownership_type": "PURCHASED",
-      "store": "app_store"
-    };
-  }
-}
-
-body = JSON.stringify(jsonToUpdate);
-$done({body});
-
+    body = JSON.stringify(jsonToUpdate);
+    $done({ body, headers: modifiedHeaders });
 });
