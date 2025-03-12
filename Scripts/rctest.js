@@ -1,6 +1,80 @@
-if (typeof $response === "undefined") {
-  // ----- Request Phase: Scalable for multiple applications -----
-  var request = $request;
+var request = $request;
+
+// Replace these with the actual URL substrings or conditions that identify the apps.
+const SPECIFIC_APP_1_CONDITION = "gentler.activity";
+const SPECIFIC_APP_2_CONDITION = "pillow";
+
+if (request.url.includes(SPECIFIC_APP_1_CONDITION)) {
+  // ----- Specific App 1 Unlocking (Based on Piece 2) -----
+  if (typeof $response === "undefined") {
+    // For a request-phase script: remove the ETag headers.
+    delete $request.headers["x-revenuecat-etag"];
+    delete $request.headers["X-RevenueCat-ETag"];
+    $done({ headers: $request.headers });
+  } else {
+    // For a response-phase script: parse and update the response.
+    const parsedResponse = JSON.parse($response.body);
+    const subscriptionData = {
+      "expires_date": "9999-09-09T09:09:09Z",
+      "original_purchase_date": "2023-02-23T02:33:33Z",
+      "purchase_date": "2023-02-23T02:33:33Z",
+      "ownership_type": "PURCHASED",
+      "store": "app_store"
+    };
+
+    parsedResponse.subscriber.subscriptions["app.gentler.activity.subscription.yearlyFamily2"] = subscriptionData;
+    parsedResponse.subscriber.entitlements["premium"] = {
+      ...subscriptionData,
+      product_identifier: "app.gentler.activity.subscription.yearlyFamily2"
+    };
+
+    $done({ body: JSON.stringify(parsedResponse) });
+  }
+  
+} else if (request.url.includes(SPECIFIC_APP_2_CONDITION)) {
+  // This branch replaces the response entirely with a fixed object.
+  var obj = JSON.parse($response.body);
+  obj = {
+    "request_date": "2022-08-06T02:30:14Z",
+    "request_date_ms": 1837536263000,
+    "subscriber": {
+      "entitlements": {
+        "premium": {
+          "expires_date": "2023-08-06T02:30:14Z",
+          "grace_period_expires_date": null,
+          "product_identifier": "com.neybox.pillow.premium.month",
+          "purchase_date": "2022-08-06T02:30:14Z"
+        }
+      },
+      "first_seen": "2022-08-06T02:30:14Z",
+      "last_seen": "2022-08-06T02:30:14Z",
+      "management_url": null,
+      "non_subscriptions": {},
+      "original_app_user_id": "YOUR_USER_ID",
+      "original_application_version": "YOUR_APP_VERSION",
+      "original_purchase_date": "2022-08-06T02:30:14Z",
+      "other_purchases": {},
+      "subscriptions": {
+        "com.neybox.pillow.premium.month": {
+          "billing_issues_detected_at": null,
+          "expires_date": "2099-08-06T02:30:14Z",
+          "grace_period_expires_date": null,
+          "is_sandbox": false,
+          "original_purchase_date": "2022-08-06T02:30:14Z",
+          "ownership_type": "PURCHASED",
+          "period_type": "active",
+          "purchase_date": "2022-08-06T02:30:14Z",
+          "store": "app_store",
+          "unsubscribe_detected_at": "2022-09-08T02:30:14Z"
+        }
+      }
+    }
+  };
+
+  $done({ body: JSON.stringify(obj) });
+
+} else {
+  // ----- Default Flow Using RevenueCat Mapping -----
   const options = {
     url: "https://api.revenuecat.com/v1/product_entitlement_mapping",
     headers: {
@@ -10,33 +84,8 @@ if (typeof $response === "undefined") {
     }
   };
 
-  // Set a timeout fallback (10 seconds) in case the HTTP request takes too long.
-  let finished = false;
-  const timeoutFallback = setTimeout(() => {
-    if (!finished) {
-      finished = true;
-      $done({ body: JSON.stringify({ error: "Request timed out after 10 seconds" }) });
-    }
-  }, 10000); // 10,000 milliseconds = 10 seconds
-
   $httpClient.get(options, function(error, newResponse, data) {
-    if (finished) return;
-    clearTimeout(timeoutFallback);
-    finished = true;
-
-    if (error) {
-      $done({ body: JSON.stringify({ error: error }) });
-      return;
-    }
-
-    let ent = {};
-    try {
-      ent = JSON.parse(data);
-    } catch (e) {
-      $done({ body: data });
-      return;
-    }
-
+    const ent = JSON.parse(data);
     let jsonToUpdate = {
       "request_date_ms": 1704070861000,
       "request_date": "2024-01-01T01:01:01Z",
@@ -59,7 +108,6 @@ if (typeof $response === "undefined") {
     for (const [entitlementId, productInfo] of Object.entries(productEntitlementMapping)) {
       const productIdentifier = productInfo.product_identifier;
       const entitlements = productInfo.entitlements;
-
       for (const entitlement of entitlements) {
         jsonToUpdate.subscriber.entitlements[entitlement] = {
           "purchase_date": "2024-01-01T01:01:01Z",
@@ -70,8 +118,6 @@ if (typeof $response === "undefined") {
           "store": "app_store",
           "product_identifier": productIdentifier
         };
-
-        // Add subscription info for the product
         jsonToUpdate.subscriber.subscriptions[productIdentifier] = {
           "expires_date": "9692-01-01T01:01:01Z",
           "original_purchase_date": "2024-01-01T01:01:01Z",
@@ -85,40 +131,4 @@ if (typeof $response === "undefined") {
 
     $done({ body: JSON.stringify(jsonToUpdate) });
   });
-} else {
-  // ----- Response Phase: Append specific app subscription while retaining all others -----
-  const responsePayload = {};
-  const parsedResponse = JSON.parse($response.body || null);
-
-  // These variables are specific to the app in question.
-  const entitlementName = "premium";
-  const subscriptionId = "app.gentler.activity.subscription.yearlyFamily2";
-
-  if (!parsedResponse || !parsedResponse.subscriber) {
-    // In case subscriber data isn't available, clean up ETag headers.
-    delete $request.headers["x-revenuecat-etag"];
-    delete $request.headers["X-RevenueCat-ETag"];
-    responsePayload.headers = $request.headers;
-  } else {
-    // Define subscription data as specified for the given app.
-    const subscriptionData = {
-      "expires_date": "9999-09-09T09:09:09Z",
-      "original_purchase_date": "2023-02-23T02:33:33Z",
-      "purchase_date": "2023-02-23T02:33:33Z",
-      "ownership_type": "PURCHASED",
-      "store": "app_store"
-    };
-
-    // Add (or override) the subscription and corresponding entitlement for the specific app.
-    parsedResponse.subscriber.subscriptions[subscriptionId] = subscriptionData;
-    parsedResponse.subscriber.entitlements[entitlementName] = {
-      ...subscriptionData,
-      product_identifier: subscriptionId
-    };
-
-    // This response now contains both the dynamically built subscriptions from the request phase
-    // and the extra subscription for the specific app.
-    responsePayload.body = JSON.stringify(parsedResponse);
-  }
-  $done(responsePayload);
 }
