@@ -1,6 +1,5 @@
 var request = $request;
 
-// Delete specified headers
 delete request.headers["x-revenuecat-etag"];
 delete request.headers["X-RevenueCat-ETag"];
 
