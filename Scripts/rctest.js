@@ -1,18 +1,26 @@
 var request = $request;
 
-// Replace these with the actual URL substrings or conditions that identify the apps.
-const SPECIFIC_APP_1_CONDITION = "gentler.activity";
-const SPECIFIC_APP_2_CONDITION = "pillow";
+// Simple logging function – adjust as needed for your environment.
+function log(msg) {
+  console.log("[DEBUG] " + msg);
+  // Alternatively, if supported: $notify("[DEBUG]", "", msg);
+}
+
+const SPECIFIC_APP_1_CONDITION = "gentler.activity"; // Adjust with your actual identifier for App 1.
+const SPECIFIC_APP_2_CONDITION = "pillow";             // Adjust with your actual identifier for App 2.
+
+log("Received request URL: " + request.url);
 
 if (request.url.includes(SPECIFIC_APP_1_CONDITION)) {
-  // ----- Specific App 1 Unlocking (Based on Piece 2) -----
+  log("Matched Specific App 1 condition.");
+  
   if (typeof $response === "undefined") {
-    // For a request-phase script: remove the ETag headers.
+    log("No $response found – running request-phase logic for Specific App 1.");
     delete $request.headers["x-revenuecat-etag"];
     delete $request.headers["X-RevenueCat-ETag"];
     $done({ headers: $request.headers });
   } else {
-    // For a response-phase script: parse and update the response.
+    log("Response-phase for Specific App 1.");
     const parsedResponse = JSON.parse($response.body);
     const subscriptionData = {
       "expires_date": "9999-09-09T09:09:09Z",
@@ -21,18 +29,17 @@ if (request.url.includes(SPECIFIC_APP_1_CONDITION)) {
       "ownership_type": "PURCHASED",
       "store": "app_store"
     };
-
     parsedResponse.subscriber.subscriptions["app.gentler.activity.subscription.yearlyFamily2"] = subscriptionData;
     parsedResponse.subscriber.entitlements["premium"] = {
       ...subscriptionData,
       product_identifier: "app.gentler.activity.subscription.yearlyFamily2"
     };
-
+    log("Updated response for Specific App 1: " + JSON.stringify(parsedResponse));
     $done({ body: JSON.stringify(parsedResponse) });
   }
   
 } else if (request.url.includes(SPECIFIC_APP_2_CONDITION)) {
-  // This branch replaces the response entirely with a fixed object.
+  log("Matched Specific App 2 condition.");
   var obj = JSON.parse($response.body);
   obj = {
     "request_date": "2022-08-06T02:30:14Z",
@@ -70,11 +77,11 @@ if (request.url.includes(SPECIFIC_APP_1_CONDITION)) {
       }
     }
   };
-
+  log("Updated response for Specific App 2: " + JSON.stringify(obj));
   $done({ body: JSON.stringify(obj) });
-
+  
 } else {
-  // ----- Default Flow Using RevenueCat Mapping -----
+  log("No specific app condition matched. Running default RevenueCat mapping flow.");
   const options = {
     url: "https://api.revenuecat.com/v1/product_entitlement_mapping",
     headers: {
@@ -85,50 +92,61 @@ if (request.url.includes(SPECIFIC_APP_1_CONDITION)) {
   };
 
   $httpClient.get(options, function(error, newResponse, data) {
-    const ent = JSON.parse(data);
-    let jsonToUpdate = {
-      "request_date_ms": 1704070861000,
-      "request_date": "2024-01-01T01:01:01Z",
-      "subscriber": {
-        "entitlement": {},
-        "first_seen": "2024-01-01T01:01:01Z",
-        "original_application_version": "9692",
-        "last_seen": "2024-01-01T01:01:01Z",
-        "other_purchases": {},
-        "management_url": null,
-        "subscriptions": {},
-        "entitlements": {},
-        "original_purchase_date": "2024-01-01T01:01:01Z",
-        "original_app_user_id": "70B24288-83C4-4035-B001-573285B21AE2",
-        "non_subscriptions": {}
-      }
-    };
-
-    const productEntitlementMapping = ent.product_entitlement_mapping;
-    for (const [entitlementId, productInfo] of Object.entries(productEntitlementMapping)) {
-      const productIdentifier = productInfo.product_identifier;
-      const entitlements = productInfo.entitlements;
-      for (const entitlement of entitlements) {
-        jsonToUpdate.subscriber.entitlements[entitlement] = {
-          "purchase_date": "2024-01-01T01:01:01Z",
-          "original_purchase_date": "2024-01-01T01:01:01Z",
-          "expires_date": "9692-01-01T01:01:01Z",
-          "is_sandbox": false,
-          "ownership_type": "PURCHASED",
-          "store": "app_store",
-          "product_identifier": productIdentifier
-        };
-        jsonToUpdate.subscriber.subscriptions[productIdentifier] = {
-          "expires_date": "9692-01-01T01:01:01Z",
-          "original_purchase_date": "2024-01-01T01:01:01Z",
-          "purchase_date": "2024-01-01T01:01:01Z",
-          "is_sandbox": false,
-          "ownership_type": "PURCHASED",
-          "store": "app_store"
-        };
-      }
+    if (error) {
+      log("HTTP GET error: " + error);
+      // Optionally pass through the original response if an error occurs.
+      $done({ body: $response ? $response.body : "{}" });
+      return;
     }
+    try {
+      const ent = JSON.parse(data);
+      let jsonToUpdate = {
+        "request_date_ms": 1704070861000,
+        "request_date": "2024-01-01T01:01:01Z",
+        "subscriber": {
+          "entitlement": {},
+          "first_seen": "2024-01-01T01:01:01Z",
+          "original_application_version": "9692",
+          "last_seen": "2024-01-01T01:01:01Z",
+          "other_purchases": {},
+          "management_url": null,
+          "subscriptions": {},
+          "entitlements": {},
+          "original_purchase_date": "2024-01-01T01:01:01Z",
+          "original_app_user_id": "70B24288-83C4-4035-B001-573285B21AE2",
+          "non_subscriptions": {}
+        }
+      };
 
-    $done({ body: JSON.stringify(jsonToUpdate) });
+      const productEntitlementMapping = ent.product_entitlement_mapping;
+      for (const [entitlementId, productInfo] of Object.entries(productEntitlementMapping)) {
+        const productIdentifier = productInfo.product_identifier;
+        const entitlements = productInfo.entitlements;
+        for (const entitlement of entitlements) {
+          jsonToUpdate.subscriber.entitlements[entitlement] = {
+            "purchase_date": "2024-01-01T01:01:01Z",
+            "original_purchase_date": "2024-01-01T01:01:01Z",
+            "expires_date": "9692-01-01T01:01:01Z",
+            "is_sandbox": false,
+            "ownership_type": "PURCHASED",
+            "store": "app_store",
+            "product_identifier": productIdentifier
+          };
+          jsonToUpdate.subscriber.subscriptions[productIdentifier] = {
+            "expires_date": "9692-01-01T01:01:01Z",
+            "original_purchase_date": "2024-01-01T01:01:01Z",
+            "purchase_date": "2024-01-01T01:01:01Z",
+            "is_sandbox": false,
+            "ownership_type": "PURCHASED",
+            "store": "app_store"
+          };
+        }
+      }
+      log("Default flow updated JSON: " + JSON.stringify(jsonToUpdate));
+      $done({ body: JSON.stringify(jsonToUpdate) });
+    } catch (e) {
+      log("Error parsing RevenueCat data: " + e);
+      $done({ body: $response ? $response.body : "{}" });
+    }
   });
 }
