@@ -38,7 +38,7 @@ $httpClient.get(options, function (error, newResponse, data) {
         "subscriber": {
             "entitlement": {},
             "first_seen": "2024-01-01T01:01:01Z",
-            "original_application_version": "9692",
+//            "original_application_version": "9692",
             "last_seen": "2024-01-01T01:01:01Z",
             "other_purchases": {},
             "management_url": null,
@@ -62,7 +62,7 @@ $httpClient.get(options, function (error, newResponse, data) {
         jsonToUpdate.subscriber.entitlements["premium"] = {
             "purchase_date": "2024-01-01T01:01:01Z",
             "original_purchase_date": "2024-01-01T01:01:01Z",
-            "expires_date": "9692-01-01T01:01:01Z",
+            "expires_date": "2099-01-01T01:01:01Z",
             "is_sandbox": false,
             "ownership_type": "PURCHASED",
             "store": "app_store",
@@ -79,7 +79,7 @@ $httpClient.get(options, function (error, newResponse, data) {
                 jsonToUpdate.subscriber.entitlements[entitlement] = {
                     "purchase_date": "2024-01-01T01:01:01Z",
                     "original_purchase_date": "2024-01-01T01:01:01Z",
-                    "expires_date": "9692-01-01T01:01:01Z",
+                    "expires_date": "2099-01-01T01:01:01Z",
                     "is_sandbox": false,
                     "ownership_type": "PURCHASED",
                     "store": "app_store",
@@ -88,7 +88,7 @@ $httpClient.get(options, function (error, newResponse, data) {
 
                 // Add product identifier to subscriptions
                 jsonToUpdate.subscriber.subscriptions[productIdentifier] = {
-                    "expires_date": "9692-01-01T01:01:01Z",
+                    "expires_date": "2099-01-01T01:01:01Z",
                     "original_purchase_date": "2024-01-01T01:01:01Z",
                     "purchase_date": "2024-01-01T01:01:01Z",
                     "is_sandbox": false,
