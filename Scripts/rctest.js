@@ -1,7 +1,6 @@
 if (typeof $response === "undefined") {
   // ----- Request Phase: Scalable for multiple applications -----
   var request = $request;
-
   const options = {
     url: "https://api.revenuecat.com/v1/product_entitlement_mapping",
     headers: {
@@ -11,7 +10,20 @@ if (typeof $response === "undefined") {
     }
   };
 
+  // Set a timeout fallback (10 seconds) in case the HTTP request takes too long.
+  let finished = false;
+  const timeoutFallback = setTimeout(() => {
+    if (!finished) {
+      finished = true;
+      $done({ body: JSON.stringify({ error: "Request timed out after 10 seconds" }) });
+    }
+  }, 10000); // 10,000 milliseconds = 10 seconds
+
   $httpClient.get(options, function(error, newResponse, data) {
+    if (finished) return;
+    clearTimeout(timeoutFallback);
+    finished = true;
+
     if (error) {
       $done({ body: JSON.stringify({ error: error }) });
       return;
@@ -43,7 +55,6 @@ if (typeof $response === "undefined") {
       }
     };
 
-    // Loop over each entitlement mapping and add subscriptions/entitlements dynamically.
     const productEntitlementMapping = ent.product_entitlement_mapping;
     for (const [entitlementId, productInfo] of Object.entries(productEntitlementMapping)) {
       const productIdentifier = productInfo.product_identifier;
