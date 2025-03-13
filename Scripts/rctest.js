@@ -1,13 +1,10 @@
 var request = $request;
 
-// Debugging: Log incoming request headers
-console.log("Incoming Request Headers: ", JSON.stringify(request.headers, null, 2));
 
 // Delete specified headers
 delete request.headers["x-revenuecat-etag"];
 delete request.headers["X-RevenueCat-ETag"];
 
-console.log("Headers after deletion: ", JSON.stringify(request.headers, null, 2));
 
 const options = {
     url: "https://api.revenuecat.com/v1/product_entitlement_mapping",
@@ -19,7 +16,7 @@ const options = {
 }
 
 // Debugging: Log API request options
-console.log("API Request Options: ", JSON.stringify(options, null, 2));
+//console.log("API Request Options: ", JSON.stringify(options, null, 2));
 
 $httpClient.get(options, function (error, newResponse, data) {
     if (error) {
@@ -38,7 +35,7 @@ $httpClient.get(options, function (error, newResponse, data) {
         "subscriber": {
             "entitlement": {},
             "first_seen": "2024-01-01T01:01:01Z",
-//            "original_application_version": "9692",
+            "original_application_version": "2099",
             "last_seen": "2024-01-01T01:01:01Z",
             "other_purchases": {},
             "management_url": null,
