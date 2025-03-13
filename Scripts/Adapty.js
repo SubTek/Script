@@ -27,7 +27,9 @@ const list = {
   'Lingvist': { id: "com.lingvist.unlimited_12_months.v11.full_1md_ft", bundle_id: "ee.keel24.Lingvist" },
   'ChatAI': { id: "chatai_yearly_ios", bundle_id: "com.scaleup.chatai" },
   'FacePlus': { id: "faceplus_yearly_subs_3dft_ios", bundle_id: "com.scaleup.faceplus" },
-  'Batched': { id: "com.advasoft.batched.premium_year", bundle_id: "com.advasoft.batched" }
+  'Batched': { id: "com.advasoft.batched.premium_year", bundle_id: "com.advasoft.batched" },
+  'TVRemote': { id: "remotetv.weekly.02", bundle_id: "com.universal.remotetv" },
+  'ScreenMirror': { id: "tv.screen.week.01", bundle_id: "tv.screen.mirroring" }
 };
 
 const premiumTemplate = {
