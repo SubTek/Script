@@ -1,7 +1,6 @@
 var request = $request;
 
 
-// Delete specified headers
 delete request.headers["x-revenuecat-etag"];
 delete request.headers["X-RevenueCat-ETag"];
 
@@ -25,7 +24,7 @@ $httpClient.get(options, function (error, newResponse, data) {
         return;
     }
 
-    console.log("Response Data: ", data);
+//    console.log("Response Data: ", data);
 
     const ent = JSON.parse(data);
 
@@ -49,13 +48,12 @@ $httpClient.get(options, function (error, newResponse, data) {
 
     const productEntitlementMapping = ent.product_entitlement_mapping;
 
-    console.log("Product Entitlement Mapping: ", JSON.stringify(productEntitlementMapping, null, 2));
+//    console.log("Product Entitlement Mapping: ", JSON.stringify(productEntitlementMapping, null, 2));
 
-    // Check if productEntitlementMapping is empty
     if (!productEntitlementMapping || Object.keys(productEntitlementMapping).length === 0) {
         console.log("No entitlements found, setting default to 'premium'");
 
-        // If entitlement is empty, set it to "premium"
+        // If entitlement is empty, set it to "premium" corrects isssues with some apps
         jsonToUpdate.subscriber.entitlements["premium"] = {
             "purchase_date": "2024-01-01T01:01:01Z",
             "original_purchase_date": "2024-01-01T01:01:01Z",
@@ -63,14 +61,14 @@ $httpClient.get(options, function (error, newResponse, data) {
             "is_sandbox": false,
             "ownership_type": "PURCHASED",
             "store": "app_store",
-            "product_identifier": "premium_product"
+            "product_identifier": productIdentifier
         };
     } else {
         for (const [entitlementId, productInfo] of Object.entries(productEntitlementMapping)) {
             const productIdentifier = productInfo.product_identifier;
             const entitlements = productInfo.entitlements;
 
-            console.log(`Processing entitlement: ${entitlementId}, Product Identifier: ${productIdentifier}`);
+        //    console.log(`Processing entitlement: ${entitlementId}, Product Identifier: ${productIdentifier}`);
 
             for (const entitlement of entitlements) {
                 jsonToUpdate.subscriber.entitlements[entitlement] = {
@@ -96,7 +94,7 @@ $httpClient.get(options, function (error, newResponse, data) {
         }
     }
 
-    console.log("Final JSON Response: ", JSON.stringify(jsonToUpdate, null, 2));
+   // console.log("Final JSON Response: ", JSON.stringify(jsonToUpdate, null, 2));
 
     body = JSON.stringify(jsonToUpdate);
     $done({ body });
