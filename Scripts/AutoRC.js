@@ -1,9 +1,7 @@
 var request = $request;
 
-
 delete request.headers["x-revenuecat-etag"];
 delete request.headers["X-RevenueCat-ETag"];
-
 
 const options = {
     url: "https://api.revenuecat.com/v1/product_entitlement_mapping",
@@ -16,13 +14,6 @@ const options = {
 
 // Debugging: Log API request options
 //console.log("API Request Options: ", JSON.stringify(options, null, 2));
-
-$httpClient.get(options, function (error, newResponse, data) {
-    if (error) {
-        console.log("Error fetching data: ", error);
-        $done({});
-        return;
-    }
 
 //    console.log("Response Data: ", data);
 
