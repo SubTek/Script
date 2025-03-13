@@ -15,7 +15,7 @@ const options = {
 }
 
 // Debugging: Log API request options
-//console.log("API Request Options: ", JSON.stringify(options, null, 2));
+console.log("API Request Options: ", JSON.stringify(options, null, 2));
 
 $httpClient.get(options, function (error, newResponse, data) {
     if (error) {
@@ -24,7 +24,7 @@ $httpClient.get(options, function (error, newResponse, data) {
         return;
     }
 
-//    console.log("Response Data: ", data);
+    console.log("Response Data: ", data);
 
     const ent = JSON.parse(data);
 
@@ -48,7 +48,7 @@ $httpClient.get(options, function (error, newResponse, data) {
 
     const productEntitlementMapping = ent.product_entitlement_mapping;
 
-//    console.log("Product Entitlement Mapping: ", JSON.stringify(productEntitlementMapping, null, 2));
+    console.log("Product Entitlement Mapping: ", JSON.stringify(productEntitlementMapping, null, 2));
 
     if (!productEntitlementMapping || Object.keys(productEntitlementMapping).length === 0) {
         console.log("No entitlements found, setting default to 'premium'");
@@ -68,7 +68,7 @@ $httpClient.get(options, function (error, newResponse, data) {
             const productIdentifier = productInfo.product_identifier;
             const entitlements = productInfo.entitlements;
 
-        //    console.log(`Processing entitlement: ${entitlementId}, Product Identifier: ${productIdentifier}`);
+            console.log(`Processing entitlement: ${entitlementId}, Product Identifier: ${productIdentifier}`);
 
             for (const entitlement of entitlements) {
                 jsonToUpdate.subscriber.entitlements[entitlement] = {
@@ -94,7 +94,7 @@ $httpClient.get(options, function (error, newResponse, data) {
         }
     }
 
-   // console.log("Final JSON Response: ", JSON.stringify(jsonToUpdate, null, 2));
+    console.log("Final JSON Response: ", JSON.stringify(jsonToUpdate, null, 2));
 
     body = JSON.stringify(jsonToUpdate);
     $done({ body });
