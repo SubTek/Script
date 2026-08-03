@@ -24,6 +24,17 @@ const PURCHASE_DATE = "2024-01-01T01:01:01Z";
 const DEFAULT_PRODUCT_IDENTIFIER = "com.revenuecat.premium";
 const DEFAULT_ENTITLEMENT = "premium";
 
+// Stable fake Apple transaction id used for subscription/non-subscription
+// records (some apps read store_transaction_id).
+const STORE_TRANSACTION_ID = "2000000000000000";
+
+// Lifetime / one-time (non-consumable) products live under non_subscriptions
+// in a real RevenueCat response, not subscriptions. Detect them by identifier
+// so apps that sell a lifetime unlock check the right place.
+function isLifetimeProduct(productIdentifier) {
+    return /(life\.?|one\.?)time|permanent|forever|non[-_]?consumable/i.test(String(productIdentifier));
+}
+
 // Full RevenueCat entitlement object. Includes every field common apps read
 // (grace period, ownership, store) so validation passes across more apps.
 function buildEntitlement(productIdentifier) {
@@ -53,15 +64,34 @@ function buildSubscription() {
         "purchase_date": PURCHASE_DATE,
         "refunded_at": null,
         "store": "app_store",
+        "store_transaction_id": STORE_TRANSACTION_ID,
         "unsubscribe_detected_at": null,
         "auto_resume_date": null
     };
 }
 
-// Grant a single entitlement plus its backing subscription.
+// Non-subscription (lifetime/consumable) record. RevenueCat stores these as an
+// array of purchases keyed by product identifier under non_subscriptions.
+function buildNonSubscription() {
+    return [{
+        "id": STORE_TRANSACTION_ID,
+        "is_sandbox": false,
+        "original_purchase_date": PURCHASE_DATE,
+        "purchase_date": PURCHASE_DATE,
+        "store": "app_store",
+        "store_transaction_id": STORE_TRANSACTION_ID
+    }];
+}
+
+// Grant a single entitlement plus its backing purchase. Lifetime/one-time
+// products go under non_subscriptions; everything else under subscriptions.
 function grant(subscriber, entitlementId, productIdentifier) {
     subscriber.entitlements[entitlementId] = buildEntitlement(productIdentifier);
-    subscriber.subscriptions[productIdentifier] = buildSubscription();
+    if (isLifetimeProduct(productIdentifier)) {
+        subscriber.non_subscriptions[productIdentifier] = buildNonSubscription();
+    } else {
+        subscriber.subscriptions[productIdentifier] = buildSubscription();
+    }
 }
 
 // An entitlement in the mapping may be a plain string or an object; normalise.
